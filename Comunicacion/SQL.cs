@@ -109,7 +109,7 @@ namespace AlarmaApi.Comunicacion
            ,'{dispositivo.descripcionDispositivo}'
            ,'{dispositivo.tipoDispositivo}'
            ,'{DateTime.Now.ToString()}'
-           ,'Sin estado'
+           ,'APAGADO'
            ,'Sin fecha de heartbeat'
            ,'Sin fecha estado'
            ,'DESCONECTADO')";

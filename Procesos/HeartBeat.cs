@@ -21,7 +21,7 @@ namespace AlarmaApi.Procesos
         }
 
         private static bool trabajando = true;
-        private const int INTERVALO = 30000;
+        private const int INTERVALO = 10000;
         private const double TIMEOUT_DISPOSITIVO = 120;
         // <key> = <valor>
         public static List<KeyValuePair<Comunicacion.Models.Dispositivo, DateTime>> timeOuts = new List<System.Collections.Generic.KeyValuePair<Comunicacion.Models.Dispositivo, DateTime>>();
@@ -33,7 +33,7 @@ namespace AlarmaApi.Procesos
                 foreach(var dispositivo in SQL.GetInstance().ObtenerDispositivos())
                 {
                     arduino.HeartBeat(dispositivo);
-                    if (!timeOuts.Exists(x => x.Key.nombreDispositivo == dispositivo.nombreDispositivo))
+                    if (!timeOuts.Exists(x => x.Key.idDispositivo == dispositivo.idDispositivo))
                     {
                         timeOuts.Add(new KeyValuePair<Comunicacion.Models.Dispositivo, DateTime>(dispositivo, DateTime.Now.AddSeconds(TIMEOUT_DISPOSITIVO)));
                         SQL.GetInstance().ActualizarDispositivo(dispositivo, new Comunicacion.Models.Dispositivo
@@ -59,10 +59,10 @@ namespace AlarmaApi.Procesos
         }
         private static void VerificarTimeOuts(Comunicacion.Models.Dispositivo dispositivo)
         {
-            if (timeOuts.Exists(x => x.Key.nombreDispositivo == dispositivo.nombreDispositivo))
+            if (timeOuts.Exists(x => x.Key.idDispositivo == dispositivo.idDispositivo))
             {
-                var timeOutDispositivo = timeOuts.Where(x => x.Key.nombreDispositivo == dispositivo.nombreDispositivo).First().Value;
-                if (DateTime.Now > timeOutDispositivo)
+                var timeOutDispositivo = timeOuts.Where(x => x.Key.idDispositivo == dispositivo.idDispositivo).First().Value;
+                if (DateTime.Now > timeOutDispositivo && dispositivo.estadoConexion != Comunicacion.Models.Dispositivo.ESTADO_CONEXION.DESCONECTADO.ToString())
                 {
                     SQL.GetInstance().ActualizarDispositivo(dispositivo, new Comunicacion.Models.Dispositivo
                     {
@@ -76,6 +76,8 @@ namespace AlarmaApi.Procesos
                         idDispositivo = dispositivo.idDispositivo,
                         estadoConexion = Comunicacion.Models.Dispositivo.ESTADO_CONEXION.DESCONECTADO.ToString(),
                     });
+                    AlarmaApi.Comunicacion.MongoDB.GetInstance().InsertarNotificacionDispositivoDesconectado(dispositivo);
+
                 }
             }
         }
