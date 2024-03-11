@@ -50,8 +50,45 @@ namespace AlarmaApi.Comunicacion
             notificacion.descripcionDispositivo = dispositivo.descripcionDispositivo;
             notificacion.idDispositivo = dispositivo.idDispositivo;
             notificacion.usuario = dispositivo.usuario;
+            notificacion.evento = (int)EVENTOS.SENSOR_MOVIMIENTO_ACTIVADO;
             _client.GetDatabase("Apps").GetCollection<BsonDocument>("Notificaciones").InsertOne(notificacion.ToBsonDocument());
         }
+
+        public void InsertarNotificacionDispositivoDesconectado(Dispositivo dispositivo)
+        {
+            Notificacion notificacion = new Notificacion();
+            notificacion.id = ObjectId.GenerateNewId().ToString();
+            notificacion.titulo = "Se desconectó un dispositivo";
+            notificacion.texto = $"Se desconectó el {dispositivo.nombreDispositivo} en {dispositivo.descripcionDispositivo} a las {dispositivo.fechaEstado}";
+            notificacion.entregado = false;
+            notificacion.visto = false;
+            notificacion.fecha = DateTime.Now.ToString();
+            notificacion.nombreDispositivo = dispositivo.nombreDispositivo;
+            notificacion.descripcionDispositivo = dispositivo.descripcionDispositivo;
+            notificacion.idDispositivo = dispositivo.idDispositivo;
+            notificacion.usuario = dispositivo.usuario;
+            notificacion.evento = (int)EVENTOS.DISPOSITIVO_DESCONECTADO;
+
+            _client.GetDatabase("Apps").GetCollection<BsonDocument>("Notificaciones").InsertOne(notificacion.ToBsonDocument());
+        }
+
+        public void InsertarNotificacionDispositivoConectado(Dispositivo dispositivo)
+        {
+            Notificacion notificacion = new Notificacion();
+            notificacion.id = ObjectId.GenerateNewId().ToString();
+            notificacion.titulo = "Se conectó un dispositivo";
+            notificacion.texto = $"Se conectó el {dispositivo.nombreDispositivo} en {dispositivo.descripcionDispositivo} a las {dispositivo.fechaEstado}";
+            notificacion.entregado = false;
+            notificacion.visto = false;
+            notificacion.fecha = DateTime.Now.ToString();
+            notificacion.nombreDispositivo = dispositivo.nombreDispositivo;
+            notificacion.descripcionDispositivo = dispositivo.descripcionDispositivo;
+            notificacion.idDispositivo = dispositivo.idDispositivo;
+            notificacion.usuario = dispositivo.usuario;
+            notificacion.evento = (int)EVENTOS.DISPOSITIVO_CONECTADO;
+            _client.GetDatabase("Apps").GetCollection<BsonDocument>("Notificaciones").InsertOne(notificacion.ToBsonDocument());
+        }
+
 
 
         public dynamic MarcarNotificacionComoEntregada(Notificacion notificacion)
@@ -151,5 +188,13 @@ namespace AlarmaApi.Comunicacion
             }
             return null;
         }
+
+        public enum EVENTOS
+        {
+            DISPOSITIVO_CONECTADO,
+            DISPOSITIVO_DESCONECTADO,
+            SENSOR_MOVIMIENTO_ACTIVADO
+        }
+
     }
 }

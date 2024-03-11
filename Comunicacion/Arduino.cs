@@ -9,7 +9,7 @@ namespace AlarmaApi.Comunicacion
 {
     public sealed class Arduino
     {
-        private const string PUERTO_SERVIDOR = "COM5";
+        private const string PUERTO_SERVIDOR = "COM6";
         public  SerialPort? _serialPort;
         public bool trabajando = true;
         public List<string> respuestasArduino = new List<string>();
